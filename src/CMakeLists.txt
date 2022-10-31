@@ -1,1 +1,2 @@
-add_library(env environment.cpp state.cpp)
+add_subdirectory(base)
+add_subdirectory(example)

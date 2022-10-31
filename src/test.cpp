@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <memory>
 
 #include "environment.h"
 #include "state.h"
@@ -104,4 +105,9 @@ TEST(MazeTest, NextPositionTest) {
   std::pair<int, int> position = test_maze.next_position(MazeAction::down);
   EXPECT_EQ(position.first, 1);
   EXPECT_EQ(position.second, 0);
+}
+
+TEST(MazeTest, DFSGenerateMazeTest) {
+  std::shared_ptr<Maze> test_maze = Maze::make_maze(10, 15);
+  std::cerr << test_maze->to_string() << std::endl;
 }

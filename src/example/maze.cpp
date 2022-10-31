@@ -2,9 +2,37 @@
 #include <iostream>
 #include <sstream>
 #include <assert.h>
+#include <algorithm>
 
 #include "maze.h"
 
+std::unique_ptr<Maze> Maze::make_maze(int r, int c)
+{
+    std::unique_ptr<Maze> maze = std::make_unique<Maze>(r, c);
+    return dfs_maze_generate(std::move(maze));
+    // return maze;
+}
+
+std::unique_ptr<Maze> Maze::dfs_maze_generate(std::unique_ptr<Maze> maze)
+{
+    std::vector<MazeAction> candidates = maze->get_action();
+    std::shuffle(candidates.begin(), candidates.end(), random_engine);
+    int origin_r = maze->get_position().first;
+    int origin_c = maze->get_position().second;
+    maze->arrived(origin_r, origin_c);
+
+    for (MazeAction& move : candidates) {
+        maze->set_position(origin_r, origin_c);
+        std::pair<int, int> next_pos = maze->next_position(move);
+        if (maze->is_arrived(next_pos.first, next_pos.second)) { continue; }
+
+        maze->knock_down_wall(origin_r, origin_c, next_pos.first, next_pos.second);
+        maze->set_position(next_pos.first, next_pos.second);
+
+        maze = dfs_maze_generate(std::move(maze));
+    }
+    return maze;
+}
 
 std::string Maze::to_string() {
     std::ostringstream oss;

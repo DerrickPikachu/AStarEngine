@@ -1,8 +1,16 @@
 #pragma once
 
+#include <string>
+#include <memory>
+#include <vector>
+#include <random>
 
 #include "grid.h"
 #include "environment.h"
+
+// Need to move to other header file
+static std::random_device rd;
+static std::default_random_engine random_engine(rd());
 
 enum class MazeAction {
     up = 0,
@@ -21,11 +29,14 @@ public:
         col_(c) {}
 
 public:
+    static std::unique_ptr<Maze> make_maze(int r, int c);
     std::string to_string();
     void knock_down_wall(int from_r, int from_c, int to_r, int to_c);
     std::vector<MazeAction> get_action();
     void apply_action(MazeAction move);
     std::pair<int, int> next_position(MazeAction move);
+    bool is_arrived(int r, int c) { return maze_cell_.is_arrived(r, c); }
+    void arrived(int r, int c) { maze_cell_.arrived(r, c); }
 
 public:
     void set_position(int pos_r, int pos_c) {
@@ -35,6 +46,7 @@ public:
     const std::pair<int ,int>& get_position() const { return current_position_; }
 
 private:
+    static std::unique_ptr<Maze> dfs_maze_generate(std::unique_ptr<Maze> maze);
     bool is_legal_move(MazeAction move);
 
 private:

@@ -7,6 +7,7 @@
 
 #include "grid.h"
 #include "environment.h"
+#include "state.h"
 
 // Need to move to other header file
 static std::random_device rd;
@@ -56,4 +57,24 @@ private:
     size_t row_;
     size_t col_;
     std::pair<int, int> current_position_;
+};
+
+class MazeState : public State {
+public:
+    MazeState() = delete;
+    MazeState(std::string state_key) : State(state_key) { decode(state_key); }
+
+public:
+    virtual std::string encode() override;
+    virtual void decode(std::string) override;
+
+public:
+    const int& getRow() const { return row; }
+    int getRow() { return row; }
+    const int& getCol() const { return col; }
+    int getCol() { return col; }
+
+protected:
+    int row;
+    int col;
 };

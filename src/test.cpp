@@ -111,3 +111,12 @@ TEST(MazeTest, DFSGenerateMazeTest) {
   std::shared_ptr<Maze> test_maze = Maze::make_maze(10, 15);
   std::cerr << test_maze->to_string() << std::endl;
 }
+
+TEST(MazeTest, StateTest) {
+  std::string test_key = "2_3";
+  MazeState test_state(test_key);
+  test_state.decode(test_key);
+  EXPECT_EQ(test_state.getRow(), 2);
+  EXPECT_EQ(test_state.getCol(), 3);
+  EXPECT_EQ(test_state.encode(), test_key);
+}

@@ -6,15 +6,13 @@
 
 #include "maze.h"
 
-std::unique_ptr<Maze> Maze::make_maze(int r, int c)
-{
+std::unique_ptr<Maze> Maze::make_maze(int r, int c) {
     std::unique_ptr<Maze> maze = std::make_unique<Maze>(r, c);
     return dfs_maze_generate(std::move(maze));
     // return maze;
 }
 
-std::unique_ptr<Maze> Maze::dfs_maze_generate(std::unique_ptr<Maze> maze)
-{
+std::unique_ptr<Maze> Maze::dfs_maze_generate(std::unique_ptr<Maze> maze) {
     std::vector<MazeAction> candidates = maze->get_action();
     std::shuffle(candidates.begin(), candidates.end(), random_engine);
     int origin_r = maze->get_position().first;
@@ -100,8 +98,7 @@ std::pair<int, int> Maze::next_position(MazeAction move) {
     assert(false);
 }
 
-bool Maze::is_legal_move(MazeAction move)
-{
+bool Maze::is_legal_move(MazeAction move) {
     if (move == MazeAction::up) {
         return current_position_.first - 1 >= 0 && horizental_wall_(current_position_.first, current_position_.second);
     } else if (move == MazeAction::right) {
@@ -113,4 +110,16 @@ bool Maze::is_legal_move(MazeAction move)
     }
     assert("illegal move input");
     return false;
+}
+
+std::string MazeState::encode() {
+    std::string result_key = std::to_string(row) + "_" + std::to_string(col);
+    return result_key;
+}
+
+void MazeState::decode(std::string key) {
+    key_ = key;
+    int underscore_idx = key.find("_");
+    row = std::stoi(key.substr(0, underscore_idx));
+    col = std::stoi(key.substr(underscore_idx + 1));
 }

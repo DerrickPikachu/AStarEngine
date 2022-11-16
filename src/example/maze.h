@@ -69,12 +69,12 @@ public:
     virtual void decode(std::string) override;
 
 public:
-    const int& getRow() const { return row; }
-    int getRow() { return row; }
-    const int& getCol() const { return col; }
-    int getCol() { return col; }
+    const int& getRow() const { return row_; }
+    int getRow() { return row_; }
+    const int& getCol() const { return col_; }
+    int getCol() { return col_; }
 
 protected:
-    int row;
-    int col;
+    int row_;
+    int col_;
 };

@@ -113,13 +113,13 @@ bool Maze::is_legal_move(MazeAction move) {
 }
 
 std::string MazeState::encode() {
-    std::string result_key = std::to_string(row) + "_" + std::to_string(col);
+    std::string result_key = std::to_string(row_) + "_" + std::to_string(col_);
     return result_key;
 }
 
 void MazeState::decode(std::string key) {
     key_ = key;
     int underscore_idx = key.find("_");
-    row = std::stoi(key.substr(0, underscore_idx));
-    col = std::stoi(key.substr(underscore_idx + 1));
+    row_ = std::stoi(key.substr(0, underscore_idx));
+    col_ = std::stoi(key.substr(underscore_idx + 1));
 }

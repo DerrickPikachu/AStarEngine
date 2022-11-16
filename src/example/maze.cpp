@@ -70,8 +70,8 @@ void Maze::knock_down_wall(int from_r, int from_c, int to_r, int to_c) {
 std::vector<MazeAction> Maze::get_action() {
     std::vector<MazeAction> moves;
     moves.reserve(4);
-    int current_r = current_position_.first;
-    int current_c = current_position_.second;
+    int current_r = current_state_.get_row();
+    int current_c = current_state_.get_col();
     if (current_r - 1 >= 0) { moves.emplace_back(MazeAction::up); }
     if (current_c + 1 < col_) { moves.emplace_back(MazeAction::right); }
     if (current_r + 1 < row_) { moves.emplace_back(MazeAction::down); }
@@ -87,29 +87,40 @@ void Maze::apply_action(MazeAction move) {
 
 std::pair<int, int> Maze::next_position(MazeAction move) {
     if (move == MazeAction::up) {
-        return {current_position_.first - 1, current_position_.second};
+        return {current_state_.get_row() - 1, current_state_.get_col()};
     } else if (move == MazeAction::right) {
-        return {current_position_.first, current_position_.second + 1};
+        return {current_state_.get_row(), current_state_.get_col() + 1};
     } else if (move == MazeAction::down) {
-        return {current_position_.first + 1, current_position_.second};
+        return {current_state_.get_row() + 1, current_state_.get_col()};
     } else if (move == MazeAction::left) {
-        return {current_position_.first, current_position_.second - 1};
+        return {current_state_.get_row(), current_state_.get_col() - 1};
     }
     assert(false);
 }
 
 bool Maze::is_legal_move(MazeAction move) {
     if (move == MazeAction::up) {
-        return current_position_.first - 1 >= 0 && horizental_wall_(current_position_.first, current_position_.second);
+        return current_state_.get_row() - 1 >= 0 && horizental_wall_(current_state_.get_row(), current_state_.get_col());
     } else if (move == MazeAction::right) {
-        return current_position_.second + 1 < col_ && vertical_wall_(current_position_.first, current_position_.second + 1);
+        return current_state_.get_col() + 1 < col_ && vertical_wall_(current_state_.get_row(), current_state_.get_col() + 1);
     } else if (move == MazeAction::down) {
-        return current_position_.first + 1 < row_ && horizental_wall_(current_position_.first + 1, current_position_.second);
+        return current_state_.get_row() + 1 < row_ && horizental_wall_(current_state_.get_row() + 1, current_state_.get_col());
     } else if (move == MazeAction::left) {
-        return current_position_.second - 1 >= 0 && vertical_wall_(current_position_.first, current_position_.second);
+        return current_state_.get_col() - 1 >= 0 && vertical_wall_(current_state_.get_row(), current_state_.get_col());
     }
     assert("illegal move input");
     return false;
+}
+
+MazeState::MazeState(const MazeState& other) {
+    *this = other;
+}
+
+MazeState& MazeState::operator=(const MazeState& other) {
+    key_ = other.key_;
+    row_ = other.row_;
+    col_ = other.col_;
+    return *this;
 }
 
 std::string MazeState::encode() {

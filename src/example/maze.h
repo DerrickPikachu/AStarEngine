@@ -20,6 +20,32 @@ enum class MazeAction {
     left = 3
 };
 
+class MazeState : public State {
+public:
+    // TODO:: need move constructor and move operator
+    MazeState() = delete;
+    MazeState(const MazeState& other);
+    MazeState& operator=(const MazeState& other);
+
+public:
+    MazeState(std::string state_key) : State(state_key) { decode(state_key); }
+    MazeState(int row, int col) : row_(row), col_(col) { key_ = encode(); }
+
+public:
+    virtual std::string encode() override;
+    virtual void decode(std::string) override;
+
+public:
+    int get_row() const { return row_; }
+    int get_row() { return row_; }
+    int get_col() const { return col_; }
+    int get_col() { return col_; }
+
+protected:
+    int row_;
+    int col_;
+};
+
 class Maze : public Environment {
 public:
     Maze(int r, int c) :
@@ -27,7 +53,8 @@ public:
         vertical_wall_(r, c + 1),
         maze_cell_(r, c),
         row_(r),
-        col_(c) {}
+        col_(c),
+        current_state_(0, 0) {}
 
 public:
     static std::unique_ptr<Maze> make_maze(int r, int c);
@@ -41,10 +68,11 @@ public:
 
 public:
     void set_position(int pos_r, int pos_c) {
-        current_position_.first = pos_r;
-        current_position_.second = pos_c;
+        current_state_ = MazeState(pos_r, pos_c);
     }
-    const std::pair<int ,int>& get_position() const { return current_position_; }
+    const std::pair<int ,int> get_position() const { 
+        return {current_state_.get_row(), current_state_.get_col()};
+    }
 
 private:
     static std::unique_ptr<Maze> dfs_maze_generate(std::unique_ptr<Maze> maze);
@@ -56,25 +84,6 @@ private:
     Cell maze_cell_;
     size_t row_;
     size_t col_;
-    std::pair<int, int> current_position_;
-};
-
-class MazeState : public State {
-public:
-    MazeState() = delete;
-    MazeState(std::string state_key) : State(state_key) { decode(state_key); }
-
-public:
-    virtual std::string encode() override;
-    virtual void decode(std::string) override;
-
-public:
-    const int& getRow() const { return row_; }
-    int getRow() { return row_; }
-    const int& getCol() const { return col_; }
-    int getCol() { return col_; }
-
-protected:
-    int row_;
-    int col_;
+    // std::pair<int, int> current_position_;
+    MazeState current_state_;
 };

@@ -116,7 +116,7 @@ TEST(MazeTest, StateTest) {
   std::string test_key = "2_3";
   MazeState test_state(test_key);
   test_state.decode(test_key);
-  EXPECT_EQ(test_state.getRow(), 2);
-  EXPECT_EQ(test_state.getCol(), 3);
+  EXPECT_EQ(test_state.get_row(), 2);
+  EXPECT_EQ(test_state.get_col(), 3);
   EXPECT_EQ(test_state.encode(), test_key);
 }

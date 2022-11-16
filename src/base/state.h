@@ -5,6 +5,7 @@
 class State {
 public:
     State() {}
+    State(State& other) { key_ = other.key_; }
     State(std::string state_key);
 
 public:

@@ -27,9 +27,11 @@ TEST(EnvironmentTest, TransitionTest) {
   test_env.append_edge("2", "3");
   test_env.append_edge("1", "3");
 
-  State* test_state = new State("1");
-  test_state = test_env.state_transition(test_state, 0);
-  test_state = test_env.state_transition(test_state, 0);
+  auto test_state = std::make_shared<State>("1");
+  std::string key = test_env.state_transition(test_state, 0);
+  test_state = std::make_shared<State>(key);
+  key = test_env.state_transition(test_state, 0);
+  test_state = std::make_shared<State>(key);
   EXPECT_EQ(test_state->key(), "3");
 }
 
@@ -39,9 +41,9 @@ TEST(EnvironmentTest, ValidActionsTest) {
   test_env.append_edge("2", "3");
   test_env.append_edge("1", "3");
 
-  State* state_one = new State("1");
-  State* state_two = new State("2");
-  State* state_three = new State("3");
+  auto state_one = std::make_shared<State>("1");
+  auto state_two = std::make_shared<State>("2");
+  auto state_three = std::make_shared<State>("3");
 
   EXPECT_EQ(test_env.valid_actions(state_one).size(), 2);
   EXPECT_EQ(test_env.valid_actions(state_two).size(), 1);
@@ -67,15 +69,15 @@ TEST(MazeTest, KnockDownWallTest) {
   EXPECT_EQ(test_maze.to_string(), maze_str);
 }
 
-TEST(MazeTest, GetActionTest) {
+TEST(MazeTest, GetAllDirectionTest) {
   Maze test_maze(3, 3);
 
   test_maze.set_position(1, 1);
-  std::vector<MazeAction> one_one_actions = test_maze.get_action();
+  std::vector<MazeAction> one_one_actions = test_maze.get_all_direction();
   test_maze.set_position(0, 0);
-  std::vector<MazeAction> zero_zero_actions = test_maze.get_action();
+  std::vector<MazeAction> zero_zero_actions = test_maze.get_all_direction();
   test_maze.set_position(2, 0);
-  std::vector<MazeAction> two_zero_actions = test_maze.get_action();
+  std::vector<MazeAction> two_zero_actions = test_maze.get_all_direction();
 
   EXPECT_EQ(one_one_actions.size(), 4);
   EXPECT_EQ(zero_zero_actions.size(), 2);
@@ -88,6 +90,7 @@ TEST(MazeTest, GetActionTest) {
 
 TEST(MazeTest, ApplyActionTest) {
   Maze test_maze(3, 3);
+  test_maze.clean_wall();
 
   test_maze.apply_action(MazeAction::right);
   test_maze.apply_action(MazeAction::down);
@@ -108,8 +111,29 @@ TEST(MazeTest, NextPositionTest) {
 }
 
 TEST(MazeTest, DFSGenerateMazeTest) {
-  std::shared_ptr<Maze> test_maze = Maze::make_maze(10, 15);
+  std::unique_ptr<Maze> test_maze = Maze::make_maze(10, 15);
   std::cerr << test_maze->to_string() << std::endl;
+
+  std::vector<std::pair<int, int>> pos_test = {{0, 0}, {3, 3}, {2, 5}, {6, 2}};
+
+  for (int i = 0; i < pos_test.size(); i++) {
+    std::cerr << "pos: " << pos_test[i].first << " " << pos_test[i].second << std::endl;
+    test_maze->set_position(pos_test[i].first, pos_test[i].second);
+    auto test_state = std::make_shared<MazeState>(pos_test[i].first, pos_test[i].second);
+    std::vector<int> action_idx = test_maze->valid_actions(test_state);
+    std::vector<MazeAction> action_set = test_maze->get_all_direction();
+    for (int i = action_set.size() - 1; i >= 0; i--) {
+      if (!test_maze->is_legal_move(action_set[i])) { action_set.erase(action_set.begin() + i); }
+    }
+    EXPECT_EQ(action_idx.size(), action_set.size());
+    for (int i = 0; i < action_idx.size(); i++) {
+      std::string next_key = test_maze->state_transition(test_state, action_idx[i]);
+      // cannot use apply action here
+      std::pair<int, int> next_pos = test_maze->next_position(action_set[i]);
+      MazeState tem_state(next_pos.first, next_pos.second);
+      EXPECT_EQ(next_key, tem_state.key());
+    }
+  }
 }
 
 TEST(MazeTest, StateTest) {
@@ -119,4 +143,11 @@ TEST(MazeTest, StateTest) {
   EXPECT_EQ(test_state.get_row(), 2);
   EXPECT_EQ(test_state.get_col(), 3);
   EXPECT_EQ(test_state.encode(), test_key);
+}
+
+TEST(MazeTest, StateConstructorTest) {
+  MazeState test_state(5, 5);
+  EXPECT_EQ(test_state.get_row(), 5);
+  EXPECT_EQ(test_state.get_col(), 5);
+  EXPECT_EQ(test_state.key(), "5_5");
 }

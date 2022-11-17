@@ -60,11 +60,14 @@ public:
     static std::unique_ptr<Maze> make_maze(int r, int c);
     std::string to_string();
     void knock_down_wall(int from_r, int from_c, int to_r, int to_c);
-    std::vector<MazeAction> get_action();
+    std::vector<MazeAction> get_all_direction();
     void apply_action(MazeAction move);
     std::pair<int, int> next_position(MazeAction move);
     bool is_arrived(int r, int c) { return maze_cell_.is_arrived(r, c); }
     void arrived(int r, int c) { maze_cell_.arrived(r, c); }
+    bool is_legal_move(MazeAction move);
+    void build_graph();
+    void clean_wall() { horizental_wall_.clean_wall(); vertical_wall_.clean_wall(); }
 
 public:
     void set_position(int pos_r, int pos_c) {
@@ -73,10 +76,11 @@ public:
     const std::pair<int ,int> get_position() const { 
         return {current_state_.get_row(), current_state_.get_col()};
     }
+    const MazeState& get_state() const { return current_state_; }
 
 private:
     static std::unique_ptr<Maze> dfs_maze_generate(std::unique_ptr<Maze> maze);
-    bool is_legal_move(MazeAction move);
+    void append_edge_by_actions(std::vector<MazeAction> candidates);
 
 private:
     Wall horizental_wall_;

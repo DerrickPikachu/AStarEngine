@@ -37,6 +37,7 @@ public:
     Wall& operator=(Wall&& other) { (Grid)(*this) = std::move((Grid)other); return *this; }
 
     void knock_down_wall(int r, int c) { elements_[r * col_ + c] = 0; }
+    void clean_wall() { for (int i = 0; i < elements_.size(); i++) { elements_[i] = 0; } }
 };
 
 class Cell : public Grid {

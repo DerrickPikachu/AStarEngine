@@ -8,12 +8,13 @@
 
 std::unique_ptr<Maze> Maze::make_maze(int r, int c) {
     std::unique_ptr<Maze> maze = std::make_unique<Maze>(r, c);
-    return dfs_maze_generate(std::move(maze));
-    // return maze;
+    maze =  dfs_maze_generate(std::move(maze));
+    maze->build_graph();
+    return maze;
 }
 
 std::unique_ptr<Maze> Maze::dfs_maze_generate(std::unique_ptr<Maze> maze) {
-    std::vector<MazeAction> candidates = maze->get_action();
+    std::vector<MazeAction> candidates = maze->get_all_direction();
     std::shuffle(candidates.begin(), candidates.end(), random_engine);
     int origin_r = maze->get_position().first;
     int origin_c = maze->get_position().second;
@@ -67,7 +68,7 @@ void Maze::knock_down_wall(int from_r, int from_c, int to_r, int to_c) {
     }
 }
 
-std::vector<MazeAction> Maze::get_action() {
+std::vector<MazeAction> Maze::get_all_direction() {
     std::vector<MazeAction> moves;
     moves.reserve(4);
     int current_r = current_state_.get_row();
@@ -100,16 +101,36 @@ std::pair<int, int> Maze::next_position(MazeAction move) {
 
 bool Maze::is_legal_move(MazeAction move) {
     if (move == MazeAction::up) {
-        return current_state_.get_row() - 1 >= 0 && horizental_wall_(current_state_.get_row(), current_state_.get_col());
+        return current_state_.get_row() - 1 >= 0 && !horizental_wall_(current_state_.get_row(), current_state_.get_col());
     } else if (move == MazeAction::right) {
-        return current_state_.get_col() + 1 < col_ && vertical_wall_(current_state_.get_row(), current_state_.get_col() + 1);
+        return current_state_.get_col() + 1 < col_ && !vertical_wall_(current_state_.get_row(), current_state_.get_col() + 1);
     } else if (move == MazeAction::down) {
-        return current_state_.get_row() + 1 < row_ && horizental_wall_(current_state_.get_row() + 1, current_state_.get_col());
+        return current_state_.get_row() + 1 < row_ && !horizental_wall_(current_state_.get_row() + 1, current_state_.get_col());
     } else if (move == MazeAction::left) {
-        return current_state_.get_col() - 1 >= 0 && vertical_wall_(current_state_.get_row(), current_state_.get_col());
+        return current_state_.get_col() - 1 >= 0 && !vertical_wall_(current_state_.get_row(), current_state_.get_col());
+    } else {
+        std::cerr << "illegal move: " << static_cast<int>(move) << std::endl;
     }
     assert("illegal move input");
     return false;
+}
+
+void Maze::build_graph() {
+    for (int r = 0; r < row_; r++) {
+        for (int c = 0; c < col_; c++) {
+            set_position(r, c);
+            append_edge_by_actions(get_all_direction());
+        }
+    }
+}
+
+void Maze::append_edge_by_actions(std::vector<MazeAction> candidates) {
+    for (MazeAction& action : candidates) {
+        if (!is_legal_move(action)) { continue; }
+        std::pair<int, int> next_pos = next_position(action);
+        MazeState next_state(next_pos.first, next_pos.second);
+        append_edge(current_state_.key(), next_state.key());
+    }
 }
 
 MazeState::MazeState(const MazeState& other) {

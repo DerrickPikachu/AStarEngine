@@ -8,6 +8,7 @@
 #include "environment.h"
 #include "state.h"
 #include "maze.h"
+#include "a_star.h"
 
 // Demonstrate some basic assertions.
 TEST(HelloTest, BasicAssertions) {
@@ -150,4 +151,39 @@ TEST(MazeTest, StateConstructorTest) {
   EXPECT_EQ(test_state.get_row(), 5);
   EXPECT_EQ(test_state.get_col(), 5);
   EXPECT_EQ(test_state.key(), "5_5");
+}
+
+class TestClass {
+public:
+  TestClass(int v) : val(v) {}
+  int val;
+  bool compare(std::shared_ptr<TestClass> other) { return val < other->val; }
+};
+
+TEST(HeapTest, ReorderTest) {
+  Heap<TestClass> test_heap;
+  test_heap.push(std::make_shared<TestClass>(5));
+  test_heap.push(std::make_shared<TestClass>(2));
+  test_heap.push(std::make_shared<TestClass>(4));
+  test_heap.push(std::make_shared<TestClass>(3));
+  test_heap.push(std::make_shared<TestClass>(1));
+  std::vector<int> answer = {1, 2, 3, 4, 5};
+  std::vector<int> heap_answer;
+
+  for (int i = 0; i < 5; i++) {
+    int value = test_heap.pop()->val;
+    EXPECT_EQ(value, answer[i]);
+  }
+}
+
+TEST(HeapTest, DynamicPushTest) {
+  Heap<TestClass> test_heap;
+  test_heap.push(std::make_shared<TestClass>(3));
+  test_heap.push(std::make_shared<TestClass>(1));
+  EXPECT_EQ(test_heap.pop()->val, 1);
+  test_heap.push(std::make_shared<TestClass>(6));
+  EXPECT_EQ(test_heap.pop()->val, 3);
+  test_heap.push(std::make_shared<TestClass>(4));
+  EXPECT_EQ(test_heap.pop()->val, 4);
+  EXPECT_EQ(test_heap.pop()->val, 6);
 }

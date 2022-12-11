@@ -18,6 +18,7 @@ target_link_libraries(test PUBLIC
     ${PYTHON_LIBRARIES}
     base
     maze
+    astar
 )
 target_include_directories(test PUBLIC
     "${PROJECT_SOURCE_DIR}/third_party/googletest"

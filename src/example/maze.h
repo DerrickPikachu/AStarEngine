@@ -57,6 +57,9 @@ public:
         current_state_(0, 0) {}
 
 public:
+    virtual std::shared_ptr<State> build_state(std::string key) override { return std::make_shared<MazeState>(key); }
+
+public:
     static std::unique_ptr<Maze> make_maze(int r, int c);
     std::string to_string();
     void knock_down_wall(int from_r, int from_c, int to_r, int to_c);

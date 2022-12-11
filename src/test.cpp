@@ -153,10 +153,19 @@ TEST(MazeTest, StateConstructorTest) {
   EXPECT_EQ(test_state.key(), "5_5");
 }
 
+TEST(MazeTest, BuildStateTest) {
+  std::shared_ptr<Environment> env = std::make_shared<Maze>(3, 3);
+  std::shared_ptr<State> state = env->build_state("1_2");
+  EXPECT_EQ(state->key(), "1_2");
+  EXPECT_EQ(std::static_pointer_cast<MazeState>(state)->get_row(), 1);
+  EXPECT_EQ(std::static_pointer_cast<MazeState>(state)->get_col(), 2);
+}
+
 class TestClass {
 public:
   TestClass(int v) : val(v) {}
   int val;
+  int index;
   bool compare(std::shared_ptr<TestClass> other) { return val < other->val; }
 };
 
@@ -186,4 +195,32 @@ TEST(HeapTest, DynamicPushTest) {
   test_heap.push(std::make_shared<TestClass>(4));
   EXPECT_EQ(test_heap.pop()->val, 4);
   EXPECT_EQ(test_heap.pop()->val, 6);
+}
+
+TEST(HeapTest, UpdateTest) {
+  Heap<TestClass> test_heap;
+  std::shared_ptr<TestClass> obj1 = std::make_shared<TestClass>(1);
+  std::shared_ptr<TestClass> obj2 = std::make_shared<TestClass>(2);
+  std::shared_ptr<TestClass> obj3 = std::make_shared<TestClass>(3);
+  test_heap.push(obj3);
+  test_heap.push(obj1);
+  test_heap.push(obj2);
+  EXPECT_EQ(obj1->index, 0);
+  EXPECT_EQ(obj2->index, 2);
+  EXPECT_EQ(obj3->index, 1);
+  obj3->val = 0;
+  test_heap.update(obj3->index);
+  EXPECT_EQ(obj3->index, 0);
+  EXPECT_EQ(obj1->index, 1);
+}
+
+TEST(AStarTest, RunTest) {
+  std::shared_ptr<Environment> env = Maze::make_maze(5, 5);
+  env->set_start_key("0_0");
+  env->set_target_key("4_0");
+  std::cerr << std::static_pointer_cast<Maze>(env)->to_string() << std::endl;
+  AStarEngine engine;
+  engine.setEnvironment(env);
+  Path founded_path = engine.run();
+  std::cerr << founded_path.to_string() << std::endl;
 }

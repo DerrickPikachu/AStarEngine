@@ -13,6 +13,8 @@ public:
     Path() = default;
     void append(std::string key) { key_order_.emplace_back(key); }
 
+    std::string to_string();
+
 protected:
     std::vector<std::string> key_order_;
 };
@@ -24,6 +26,7 @@ public:
     Heap() = default;
 
     void push(std::shared_ptr<T> new_obj) {
+        new_obj->index = pool_.size();
         pool_.push_back(new_obj);
         up_heapify(pool_.size() - 1);
     }
@@ -37,6 +40,7 @@ public:
     }
 
     bool empty() { return pool_.empty(); }
+    void update(int index) { up_heapify(index); }
 
 protected:
     void up_heapify(int i) {
@@ -61,6 +65,8 @@ protected:
         std::shared_ptr<T> tmp = pool_[i];
         pool_[i] = pool_[j];
         pool_[j] = tmp;
+        pool_[i]->index = i;
+        pool_[j]->index = j;
     }
 
 protected:
@@ -71,22 +77,33 @@ class AStarEngine {
 protected:
     class Candidate {
     public:
-        Candidate(float v, std::string k) {
-            a_star_value = v;
+        Candidate(float g, float h, std::string k) {
+            g_value = g;
+            h_value = h;
             key = k;
+            index = 0;
+            come_from_key = "";
         }
 
         bool compare(std::shared_ptr<Candidate> other) {
-            return a_star_value < other->a_star_value
+            return g_value + h_value < other->g_value + other->h_value;
         }
 
-        float a_star_value;
+        float g_value;
+        float h_value;
         std::string key;
+        std::string come_from_key;
+        int index;
     };
 
 public:
     void setEnvironment(std::shared_ptr<Environment> env) { environment_ = env; }
     Path run();
+
+protected:
+    Path build_path();
+    void update_candidate(std::string update_key, std::string from_key, float new_g);
+    void add_candidate(std::string new_key, std::string from_key, float new_g);
 
 protected:
     std::shared_ptr<Environment> environment_;

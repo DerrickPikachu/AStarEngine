@@ -6,5 +6,5 @@ target_include_directories(astar PUBLIC
 )
 target_link_libraries(astar PUBLIC
     base
-    maze
+    example
 )

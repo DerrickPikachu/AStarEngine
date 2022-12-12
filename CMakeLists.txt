@@ -17,7 +17,7 @@ target_link_libraries(test PUBLIC
     pybind11_headers
     ${PYTHON_LIBRARIES}
     base
-    maze
+    example
     astar
 )
 target_include_directories(test PUBLIC

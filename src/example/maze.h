@@ -4,7 +4,6 @@
 #include <memory>
 #include <vector>
 #include <random>
-
 #include "grid.h"
 #include "environment.h"
 #include "state.h"

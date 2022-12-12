@@ -8,8 +8,6 @@
 #include "environment.h"
 
 
-
-
 template<class T>
 class Heap {
 public:

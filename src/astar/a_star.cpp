@@ -1,7 +1,7 @@
-#include "a_star.h"
-#include "state.h"
 #include <stack>
 #include <iostream>
+#include "a_star.h"
+#include "state.h"
 
 
 std::string Path::to_string() {
@@ -9,7 +9,6 @@ std::string Path::to_string() {
     for (const std::string& key : key_order_) { str += key + " "; }
     return str;
 }
-
 
 Path AStarEngine::run() {
     std::string start_key = environment_->get_start_key();

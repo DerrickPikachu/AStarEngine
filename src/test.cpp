@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 #include <memory>
-
 #include "environment.h"
 #include "state.h"
 #include "maze.h"

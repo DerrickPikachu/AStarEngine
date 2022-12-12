@@ -3,7 +3,6 @@
 #include <sstream>
 #include <assert.h>
 #include <algorithm>
-
 #include "maze.h"
 
 std::unique_ptr<Maze> Maze::make_maze(int r, int c) {

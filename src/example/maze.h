@@ -58,10 +58,11 @@ public:
 
 public:
     virtual std::shared_ptr<State> build_state(std::string key) override { return std::make_shared<MazeState>(key); }
+    virtual std::string to_string() const override;
+    virtual std::string to_string(const Path&) const override;
 
 public:
     static std::unique_ptr<Maze> make_maze(int r, int c);
-    std::string to_string();
     void knock_down_wall(int from_r, int from_c, int to_r, int to_c);
     std::vector<MazeAction> get_all_direction();
     void apply_action(MazeAction move);

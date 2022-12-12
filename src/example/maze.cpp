@@ -33,7 +33,7 @@ std::unique_ptr<Maze> Maze::dfs_maze_generate(std::unique_ptr<Maze> maze) {
     return maze;
 }
 
-std::string Maze::to_string() {
+std::string Maze::to_string() const {
     std::ostringstream oss;
     for (int r = 0; r < row_ + 1; r++) {
         for (int c = 0; c < col_; c++) {
@@ -45,6 +45,51 @@ std::string Maze::to_string() {
             for (int c = 0; c < col_; c++) {
                 std::string wall = (vertical_wall_(r, c) == 1)? "##" : "  ";
                 oss << wall << "  ";
+            }
+            oss << "##" << std::endl;
+        }
+    }
+    return oss.str();
+}
+
+std::string Maze::to_string(const Path& path) const {
+    std::ostringstream oss;
+    std::vector<std::vector<bool>> bitmap(row_, std::vector<bool>(col_, false));
+
+    for (int i = 0; i < path.size(); i++) {
+        MazeState state(path.get(i));
+        bitmap[state.get_row()][state.get_col()] = true;
+    }
+
+    for (int r = 0; r < row_ + 1; r++) {
+        for (int c = 0; c < col_; c++) {
+            std::string wall;
+            if (horizental_wall_(r, c) == 1) {
+                wall = "##";
+            } else if (r > 0 && r < row_ && bitmap[r - 1][c] && bitmap[r][c]) {
+                wall = "..";
+            } else {
+                wall = "  ";
+            }
+            oss << "##" << wall;
+        }
+        oss << "##" << std::endl;
+        if (r < row_) {
+            for (int c = 0; c < col_; c++) {
+                std::string wall;
+                if (vertical_wall_(r, c) == 1) {
+                    wall = "##";
+                } else if (c > 0 && c < col_ && bitmap[r][c - 1] && bitmap[r][c]) {
+                    wall = "..";
+                } else {
+                    wall = "  ";
+                }
+                oss << wall;
+                if (bitmap[r][c]) {
+                    oss << "..";
+                } else {
+                    oss << "  ";
+                }
             }
             oss << "##" << std::endl;
         }

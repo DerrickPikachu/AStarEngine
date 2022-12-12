@@ -6,6 +6,20 @@
 #include <memory>
 #include "state.h"
 
+
+class Path {
+public:
+    Path() = default;
+    void append(std::string key) { key_order_.emplace_back(key); }
+    std::string get(int index) const { return key_order_[index]; }
+    size_t size() const { return key_order_.size(); }
+
+    std::string to_string();
+
+protected:
+    std::vector<std::string> key_order_;
+};
+
 class Environment {
 public:
     void append_edge(std::string, std::string);
@@ -13,6 +27,8 @@ public:
     virtual std::vector<int> valid_actions(std::shared_ptr<State>);
     virtual float astar_heuristic(std::shared_ptr<State>) { return -1.0; }
     virtual std::shared_ptr<State> build_state(std::string) { return nullptr; }
+    virtual std::string to_string() const { return ""; }
+    virtual std::string to_string(const Path&) const { return ""; }
 
 public:
     void set_start_key(std::string key) { start_key = key; }

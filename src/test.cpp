@@ -215,12 +215,13 @@ TEST(HeapTest, UpdateTest) {
 }
 
 TEST(AStarTest, RunTest) {
-  std::shared_ptr<Environment> env = Maze::make_maze(5, 5);
+  std::shared_ptr<Environment> env = Maze::make_maze(10, 15);
   env->set_start_key("0_0");
-  env->set_target_key("4_0");
-  std::cerr << std::static_pointer_cast<Maze>(env)->to_string() << std::endl;
+  env->set_target_key("0_9");
+  std::cerr << env->to_string() << std::endl;
   AStarEngine engine;
   engine.setEnvironment(env);
   Path founded_path = engine.run();
   std::cerr << founded_path.to_string() << std::endl;
+  std::cerr << env->to_string(founded_path) << std::endl;
 }

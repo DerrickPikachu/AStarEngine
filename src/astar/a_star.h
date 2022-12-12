@@ -8,16 +8,6 @@
 #include "environment.h"
 
 
-class Path {
-public:
-    Path() = default;
-    void append(std::string key) { key_order_.emplace_back(key); }
-
-    std::string to_string();
-
-protected:
-    std::vector<std::string> key_order_;
-};
 
 
 template<class T>

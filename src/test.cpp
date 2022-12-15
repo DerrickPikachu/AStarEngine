@@ -9,6 +9,7 @@
 #include "maze.h"
 #include "a_star.h"
 #include "python_try.h"
+#include "python_env.h"
 
 // Demonstrate some basic assertions.
 TEST(HelloTest, BasicAssertions) {
@@ -234,30 +235,35 @@ TEST(PythonTest, FuncTest) {
   Py_Finalize();
 }
 
-TEST(PythonTest, CallMethodTest) {
-  // setenv("PYTHONPATH", ".", 1);
-  Py_Initialize();
-  PyObject* module_name = PyUnicode_FromString("my_test");
-  PyObject* mod = PyImport_Import(module_name);
-  EXPECT_NE(mod, nullptr);
-  Py_DECREF(module_name);
+// TEST(PythonTest, CallMethodTest) {
+//   // setenv("PYTHONPATH", ".", 1);
+//   Py_Initialize();
+//   PyObject* module_name = PyUnicode_FromString("my_test");
+//   PyObject* mod = PyImport_Import(module_name);
+//   EXPECT_NE(mod, nullptr);
+//   Py_DECREF(module_name);
 
-  PyObject* dict = PyModule_GetDict(mod);
-  EXPECT_NE(dict, nullptr);
-  Py_DECREF(mod);
+//   PyObject* dict = PyModule_GetDict(mod);
+//   EXPECT_NE(dict, nullptr);
+//   Py_DECREF(mod);
 
-  PyObject* py_class = PyDict_GetItemString(dict, "MyTest");
-  EXPECT_NE(py_class, nullptr);
-  Py_DECREF(dict);
+//   PyObject* py_class = PyDict_GetItemString(dict, "MyTest");
+//   EXPECT_NE(py_class, nullptr);
+//   Py_DECREF(dict);
   
-  EXPECT_TRUE(PyCallable_Check(py_class));
-  PyObject* obj = PyObject_CallObject(py_class, nullptr);
-  Py_DECREF(py_class);
+//   EXPECT_TRUE(PyCallable_Check(py_class));
+//   PyObject* obj = PyObject_CallObject(py_class, nullptr);
+//   Py_DECREF(py_class);
   
-  PyObject_CallMethod(obj, "say_hello", nullptr);
-  PyObject_CallMethod(obj, "say_something", "(s)", "I am cool");
-  PyObject_CallMethod(obj, "add_one", "(s,i)", "You are not cool", 10);
-  Py_DECREF(obj);
+//   PyObject_CallMethod(obj, "say_hello", nullptr);
+//   PyObject_CallMethod(obj, "say_something", "(s)", "I am cool");
+//   PyObject_CallMethod(obj, "add_one", "(s,i)", "You are not cool", 10);
+//   Py_DECREF(obj);
 
-  Py_Finalize();
+//   Py_Finalize();
+// }
+
+TEST(PythonTest, PythonEnvTest) {
+  PythonEnv env;
+  PythonState state(nullptr);
 }

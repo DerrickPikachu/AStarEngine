@@ -1,4 +1,4 @@
-add_library(base environment.cpp state.cpp python_try.cpp)
+add_library(base environment.cpp state.cpp python_try.cpp python_env.cpp)
 
 find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})

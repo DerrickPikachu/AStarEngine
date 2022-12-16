@@ -40,5 +40,20 @@ PYBIND11_MODULE(astar_engine, m) {
             std::shared_ptr<State> py_state = std::make_shared<PythonState>(state.ptr());
             std::string next_key = self.state_transition(py_state, action);
             return next_key;
+        })
+        .def("valid_actions", [](PythonEnv& self, object& state) {
+            std::shared_ptr<State> py_state = std::make_shared<PythonState>(state.ptr());
+            std::vector<int> actions = self.valid_actions(py_state);
+            PyObject* tup = PyTuple_New(actions.size());
+            for (int i = 0; i < actions.size(); i++) {
+                PyObject* val = PyLong_FromLong(actions[i]);
+                PyTuple_SetItem(tup, i, val);
+            }
+            return handle(tup);
+        })
+        .def("astar_heuristic", [](PythonEnv& self, object& state) {
+            std::shared_ptr<State> py_state = std::make_shared<PythonState>(state.ptr());
+            float heuristic_value = self.astar_heuristic(py_state);
+            return heuristic_value;
         });
 }

@@ -26,6 +26,29 @@ std::string PythonEnv::state_transition(std::shared_ptr<State> state, int action
     return next_key;
 }
 
+std::vector<int> PythonEnv::valid_actions(std::shared_ptr<State> state) {
+    PyObject* ret = PyObject_CallMethod(py_env_, "valid_actions",
+        "(s)", state->key().c_str());
+    
+    if (ret == nullptr) { std::cerr << "Error: valid actions ret is nullptr!" << std::endl; }
+    std::vector<int> actions;
+    for (Py_ssize_t i = 0; i < PyTuple_Size(ret); i++) {
+        PyObject* item = PyTuple_GetItem(ret, i);
+        int action_id = PyLong_AsLong(item);
+        actions.emplace_back(action_id);
+    }
+    return actions;
+}
+
+float PythonEnv::astar_heuristic(std::shared_ptr<State> state) {
+    PyObject* ret = PyObject_CallMethod(py_env_, "astar_heuristic",
+        "(s)", state->key().c_str());
+    
+    if (ret == nullptr) { std::cerr << "Error: heuristic ret is nullptr!" << std::endl; }
+    if (!PyFloat_Check(ret)) { std::cerr << "Error: heuristic ret is not float!" << std::endl; }
+    return PyFloat_AsDouble(ret);
+}
+
 std::shared_ptr<State> PythonEnv::build_state(std::string key) {
     // return std::make_shared<PythonState>(PyObject_CallObject(py_state_class_, "(s)", key.c_str()));
     return std::make_shared<PythonState>(PyObject_CallFunction(py_state_class_, "(s)", key.c_str()));

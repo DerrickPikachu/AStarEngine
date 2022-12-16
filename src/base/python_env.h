@@ -24,8 +24,8 @@ protected:
 class PythonEnv : public Environment {
 public:
     virtual std::string state_transition(std::shared_ptr<State>, int /* action index */) override;
-    // virtual std::vector<int> valid_actions(std::shared_ptr<State>) override;
-    // virtual float astar_heuristic(std::shared_ptr<State>) override;
+    virtual std::vector<int> valid_actions(std::shared_ptr<State>) override;
+    virtual float astar_heuristic(std::shared_ptr<State>) override;
     virtual std::shared_ptr<State> build_state(std::string) override;
     // virtual std::string to_string() const override;
     // virtual std::string to_string(const Path&) const override; 

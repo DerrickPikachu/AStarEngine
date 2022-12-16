@@ -96,7 +96,6 @@ class TestSlidingPuzzleEnv(unittest.TestCase):
         test_key = "3_5;4;6;3;2;8;7;0;1"
         actions = env.valid_actions(test_key)
         answer = [0, 1, 3]
-        self.assertEqual(len(answer), len(actions))
         for i in range(len(answer)):
             self.assertEqual(actions[i], answer[i])
     
@@ -108,6 +107,18 @@ class TestSlidingPuzzleEnv(unittest.TestCase):
         self.assertEqual(len(answer), len(actions))
         for i in range(len(answer)):
             self.assertEqual(actions[i], answer[i])
+        
+    def test_bind_valid_actions(self):
+        env = py_env.sliding_puzzle.SlidingPuzzleEnv(2)
+        cpp_env = py_env.astar_engine.PythonEnv()
+        cpp_env.set_py_env(env)
+        test_key = "2_3;2;1;0"
+        state = py_env.sliding_puzzle.SlidingPuzzleState(test_key)
+        result = cpp_env.valid_actions(state)
+        answer = [0, 3]
+        self.assertEqual(len(result), len(answer))
+        for i in range(len(answer)):
+            self.assertEqual(result[i], answer[i])
     
     def test_astar_heuristic(self):
         env = py_env.sliding_puzzle.SlidingPuzzleEnv(3)
@@ -120,6 +131,15 @@ class TestSlidingPuzzleEnv(unittest.TestCase):
         for i in range(len(answer)):
             heuristic_value = env.astar_heuristic(test_key[i])
             self.assertEqual(heuristic_value, answer[i])
+    
+    def test_bind_astar_heuristic(self):
+        env = py_env.sliding_puzzle.SlidingPuzzleEnv(3)
+        cpp_env = py_env.astar_engine.PythonEnv()
+        cpp_env.set_py_env(env)
+        test_key = "3_0;4;6;7;1;3;2;5;8"
+        state = py_env.sliding_puzzle.SlidingPuzzleState(test_key)
+        value = cpp_env.astar_heuristic(state)
+        self.assertEqual(value, 12)
 
 
 if __name__ == "__main__":

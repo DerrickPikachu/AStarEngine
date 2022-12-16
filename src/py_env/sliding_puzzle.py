@@ -91,11 +91,11 @@ class SlidingPuzzleEnv:
             action_list.append(SlidingPuzzleAction.DOWN.value)
         if self.state_.empty_pos_[1] > 0:
             action_list.append(SlidingPuzzleAction.LEFT.value)
-        return action_list
+        return tuple(action_list)
     
     def astar_heuristic(self, state_key):
         self.state_.decode(state_key)
-        manhattan = 0
+        manhattan = .0
         for r in range(self.board_size_):
             for c in range(self.board_size_):
                 puzzle = self.state_.board_[r][c]

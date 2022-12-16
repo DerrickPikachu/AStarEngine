@@ -69,13 +69,39 @@ class SlidingPuzzleState:
 
 
 class SlidingPuzzleEnv:
-    def __init__(self):
+    def __init__(self, size):
         self.state_ = SlidingPuzzleState('')
+        self.board_size_ = size
 
     def state_transition(self, state_key, action_id):
         self.state_.decode(state_key)
-        # print(f'action id: {action_id}')
         if action_id >= len(SlidingPuzzleAction) or action_id < 0:
             print('Error: Invalid action id!')
             exit()
         return self.state_.slide(action_id)
+    
+    def valid_actions(self, state_key):
+        self.state_.decode(state_key)
+        action_list = []
+        if self.state_.empty_pos_[0] > 0:
+            action_list.append(SlidingPuzzleAction.UP.value)
+        if self.state_.empty_pos_[1] < self.board_size_ - 1:
+            action_list.append(SlidingPuzzleAction.RIGHT.value)
+        if self.state_.empty_pos_[0] < self.board_size_ - 1:
+            action_list.append(SlidingPuzzleAction.DOWN.value)
+        if self.state_.empty_pos_[1] > 0:
+            action_list.append(SlidingPuzzleAction.LEFT.value)
+        return action_list
+    
+    def astar_heuristic(self, state_key):
+        self.state_.decode(state_key)
+        manhattan = 0
+        for r in range(self.board_size_):
+            for c in range(self.board_size_):
+                puzzle = self.state_.board_[r][c]
+                if (puzzle == 0):
+                    continue
+                correct_r = (puzzle - 1) // self.board_size_
+                correct_c = (puzzle - 1) % self.board_size_
+                manhattan += abs(r - correct_r) + abs(c - correct_c)
+        return manhattan

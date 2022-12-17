@@ -172,6 +172,10 @@ class TestSlidingPuzzleEnv(unittest.TestCase):
     def test_shuffle(self):
         env = py_env.sliding_puzzle.SlidingPuzzleEnv(4)
         env.shuffle()
+        cpp_env = py_env.astar_engine.PythonEnv()
+        cpp_env.set_py_env(env)
+        self.assertEqual(cpp_env.get_start_key(), env.start_key)
+        self.assertEqual(cpp_env.get_target_key(), env.target_key)
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@
 #include <iostream>
 #include "python_try.h"
 #include "python_env.h"
+// #include "astar_engine.h"
 
 namespace py = pybind11;
 
@@ -58,5 +59,10 @@ PYBIND11_MODULE(astar_engine, m) {
         })
         .def("to_string", [](PythonEnv& self) {
             return self.to_string();
-        });
+        })
+        .def("get_start_key", &PythonEnv::get_start_key)
+        .def("get_target_key", &PythonEnv::get_target_key);
+    
+    // py::class_<AStarEngine>(m, "AStarEngine")
+    //     .def(py::init<>());
 }

@@ -77,7 +77,9 @@ class SlidingPuzzleEnv:
         for i in range(1, size * size):
             self.target_key += f'{i};'
         self.target_key += '0'
+        self.start_key = ''
         self.state_ = SlidingPuzzleState(self.target_key)
+
 
     def state_transition(self, state_key, action_id):
         self.state_.decode(state_key)
@@ -151,3 +153,4 @@ class SlidingPuzzleEnv:
             previous_key = current_key
             current_key = self.state_.slide(choosed_action, act=True)
         print(self.to_string())
+        self.start_key = current_key

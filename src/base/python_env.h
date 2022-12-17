@@ -30,7 +30,7 @@ public:
     virtual std::string to_string() const override;
     virtual std::string to_string(const Path&) const override; 
     void set_state_class(PyObject* state_class) { py_state_class_ = state_class; }
-    void set_py_env(PyObject* py_env) { py_env_ = py_env; }
+    void set_py_env(PyObject* py_env);
 
 protected:
     PyObject* py_env_;

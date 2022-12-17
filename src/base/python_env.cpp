@@ -69,3 +69,13 @@ std::string PythonEnv::to_string() const {
 std::string PythonEnv::to_string(const Path& path) const {
     return "";
 }
+
+void PythonEnv::set_py_env(PyObject* py_env) {
+    py_env_ = py_env;
+    PyObject* start_key = PyObject_GetAttr(py_env_, PyUnicode_FromString("start_key"));
+    PyObject* target_key = PyObject_GetAttr(py_env_, PyUnicode_FromString("target_key"));
+    const char* utf8_string = PyUnicode_AsUTF8(start_key);
+    set_start_key(std::string(utf8_string));
+    utf8_string = PyUnicode_AsUTF8(target_key);
+    set_target_key(utf8_string);
+}

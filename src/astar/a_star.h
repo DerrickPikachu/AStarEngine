@@ -85,7 +85,7 @@ protected:
     };
 
 public:
-    void setEnvironment(std::shared_ptr<Environment> env) { environment_ = env; }
+    void set_environment(std::shared_ptr<Environment> env) { environment_ = env; }
     Path run();
 
 protected:

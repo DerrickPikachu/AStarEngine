@@ -3,7 +3,7 @@
 #include <iostream>
 #include "python_try.h"
 #include "python_env.h"
-// #include "astar_engine.h"
+#include "a_star.h"
 
 namespace py = pybind11;
 
@@ -63,6 +63,20 @@ PYBIND11_MODULE(astar_engine, m) {
         .def("get_start_key", &PythonEnv::get_start_key)
         .def("get_target_key", &PythonEnv::get_target_key);
     
-    // py::class_<AStarEngine>(m, "AStarEngine")
-    //     .def(py::init<>());
+    py::class_<AStarEngine>(m, "AStarEngine")
+        .def(py::init<>())
+        .def ("set_environment", [](AStarEngine& self, object& py_env, object& py_state_class) {
+            std::shared_ptr<PythonEnv> py_env_wrapper = std::make_shared<PythonEnv>();
+            py_env_wrapper->set_py_env(py_env.ptr());
+            py_env_wrapper->set_state_class(py_state_class.ptr());
+            self.set_environment(py_env_wrapper);
+        })
+        .def("run", [](AStarEngine& self) {
+            Path path = self.run();
+            PyObject* py_list = PyList_New(0);
+            for (int i = 0; i < path.size(); i++) {
+                PyList_Append(py_list, PyUnicode_FromString(path.get(i).c_str()));
+            }
+            return handle(py_list);
+        });
 }

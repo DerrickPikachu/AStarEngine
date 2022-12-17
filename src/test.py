@@ -177,6 +177,37 @@ class TestSlidingPuzzleEnv(unittest.TestCase):
         self.assertEqual(cpp_env.get_start_key(), env.start_key)
         self.assertEqual(cpp_env.get_target_key(), env.target_key)
 
+class TestAStarEngine(unittest.TestCase):
+    def test_set_environment(self):
+        env = py_env.sliding_puzzle.SlidingPuzzleEnv(2)
+        env.shuffle()
+        astar = py_env.astar_engine.AStarEngine()
+        astar.set_environment(env, py_env.sliding_puzzle.SlidingPuzzleState)
+    
+    def test_run(self):
+        env = py_env.sliding_puzzle.SlidingPuzzleEnv(2)
+        env.shuffle()
+        astar = py_env.astar_engine.AStarEngine()
+        astar.set_environment(env, py_env.sliding_puzzle.SlidingPuzzleState)
+        path = astar.run()
+        print(env.to_string_with_path(path))
+    
+    def test_run_with_board_size3(self):
+        env = py_env.sliding_puzzle.SlidingPuzzleEnv(3)
+        env.shuffle()
+        astar = py_env.astar_engine.AStarEngine()
+        astar.set_environment(env, py_env.sliding_puzzle.SlidingPuzzleState)
+        path = astar.run()
+        print(env.to_string_with_path(path))
+    
+    def test_run_with_board_size4(self):
+        env = py_env.sliding_puzzle.SlidingPuzzleEnv(4)
+        env.shuffle()
+        astar = py_env.astar_engine.AStarEngine()
+        astar.set_environment(env, py_env.sliding_puzzle.SlidingPuzzleState)
+        path = astar.run()
+        print(env.to_string_with_path(path))
+
 
 if __name__ == "__main__":
     unittest.main()

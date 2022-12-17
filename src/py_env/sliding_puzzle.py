@@ -143,7 +143,7 @@ class SlidingPuzzleEnv:
         current_key = self.target_key
         num_moves = self.board_size_ * 3
         for i in range(num_moves):
-            print(self.to_string())
+            # print(self.to_string())
             actions = self.valid_actions(current_key)
             next_key = previous_key
             while next_key == previous_key:
@@ -152,5 +152,5 @@ class SlidingPuzzleEnv:
                 next_key = self.state_.slide(choosed_action)
             previous_key = current_key
             current_key = self.state_.slide(choosed_action, act=True)
-        print(self.to_string())
+        # print(self.to_string())
         self.start_key = current_key

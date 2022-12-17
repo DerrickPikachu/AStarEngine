@@ -221,7 +221,7 @@ TEST(AStarTest, RunTest) {
   env->set_target_key("0_9");
   std::cerr << env->to_string() << std::endl;
   AStarEngine engine;
-  engine.setEnvironment(env);
+  engine.set_environment(env);
   Path founded_path = engine.run();
   std::cerr << founded_path.to_string() << std::endl;
   std::cerr << env->to_string(founded_path) << std::endl;
@@ -263,7 +263,7 @@ TEST(PythonTest, FuncTest) {
 //   Py_Finalize();
 // }
 
-TEST(PythonTest, PythonEnvTest) {
-  PythonEnv env;
-  PythonState state(nullptr);
-}
+// TEST(PythonTest, PythonEnvTest) {
+//   PythonEnv env;
+//   PythonState state(nullptr);
+// }

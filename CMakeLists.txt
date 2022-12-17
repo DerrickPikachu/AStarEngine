@@ -32,6 +32,8 @@ target_link_libraries(astar_engine PUBLIC
     pybind11_headers
     ${PYTHON_LIBRARIES}
     base
+    example
+    astar
 )
 target_include_directories(astar_engine PUBLIC
     "${PROJECT_SOURCE_DIR}/third_party/pybind11"

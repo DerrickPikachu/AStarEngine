@@ -27,8 +27,8 @@ public:
     virtual std::vector<int> valid_actions(std::shared_ptr<State>) override;
     virtual float astar_heuristic(std::shared_ptr<State>) override;
     virtual std::shared_ptr<State> build_state(std::string) override;
-    // virtual std::string to_string() const override;
-    // virtual std::string to_string(const Path&) const override; 
+    virtual std::string to_string() const override;
+    virtual std::string to_string(const Path&) const override; 
     void set_state_class(PyObject* state_class) { py_state_class_ = state_class; }
     void set_py_env(PyObject* py_env) { py_env_ = py_env; }
 

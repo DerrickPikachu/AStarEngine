@@ -55,5 +55,8 @@ PYBIND11_MODULE(astar_engine, m) {
             std::shared_ptr<State> py_state = std::make_shared<PythonState>(state.ptr());
             float heuristic_value = self.astar_heuristic(py_state);
             return heuristic_value;
+        })
+        .def("to_string", [](PythonEnv& self) {
+            return self.to_string();
         });
 }

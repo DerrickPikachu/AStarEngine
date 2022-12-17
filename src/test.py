@@ -147,6 +147,14 @@ class TestSlidingPuzzleEnv(unittest.TestCase):
         answer_str = "+-+-+-+\n|0|4|6|\n+-+-+-+\n|7|1|3|\n+-+-+-+\n|2|5|8|\n+-+-+-+\n"
         env.state_.decode(test_key)
         self.assertEqual(env.to_string(), answer_str)
+    
+    def test_bind_to_string(self):
+        env = py_env.sliding_puzzle.SlidingPuzzleEnv(3)
+        test_key = "3_0;4;6;7;1;3;2;5;8"
+        env.state_.decode(test_key)
+        cpp_env = py_env.astar_engine.PythonEnv()
+        cpp_env.set_py_env(env)
+        self.assertEqual(cpp_env.to_string(), env.to_string())
 
     def test_to_string_with_path(self):
         env = py_env.sliding_puzzle.SlidingPuzzleEnv(3)

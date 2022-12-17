@@ -37,6 +37,7 @@ std::vector<int> PythonEnv::valid_actions(std::shared_ptr<State> state) {
         int action_id = PyLong_AsLong(item);
         actions.emplace_back(action_id);
     }
+    Py_DECREF(ret);
     return actions;
 }
 
@@ -46,10 +47,25 @@ float PythonEnv::astar_heuristic(std::shared_ptr<State> state) {
     
     if (ret == nullptr) { std::cerr << "Error: heuristic ret is nullptr!" << std::endl; }
     if (!PyFloat_Check(ret)) { std::cerr << "Error: heuristic ret is not float!" << std::endl; }
-    return PyFloat_AsDouble(ret);
+    float value = PyFloat_AsDouble(ret);
+    Py_DECREF(ret);
+    return value;
 }
 
 std::shared_ptr<State> PythonEnv::build_state(std::string key) {
     // return std::make_shared<PythonState>(PyObject_CallObject(py_state_class_, "(s)", key.c_str()));
     return std::make_shared<PythonState>(PyObject_CallFunction(py_state_class_, "(s)", key.c_str()));
+}
+
+std::string PythonEnv::to_string() const {
+    PyObject* ret = PyObject_CallMethod(py_env_, "to_string", nullptr);
+    if (ret == nullptr) { std::cerr << "Error: to string ret is nullptr" << std::endl; }
+    const char* utf8_string = PyUnicode_AsUTF8(ret);
+    std::string board_str(utf8_string);
+    Py_DECREF(ret);
+    return board_str;
+}
+
+std::string PythonEnv::to_string(const Path& path) const {
+    return "";
 }

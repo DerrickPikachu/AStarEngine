@@ -1,4 +1,5 @@
 from enum import Enum
+import random
 
 class SlidingPuzzleAction(Enum):
     UP = 0
@@ -34,7 +35,7 @@ class SlidingPuzzleState:
                 self.empty_pos_[0] = i // self.board_size_
                 self.empty_pos_[1] = i % self.board_size_
     
-    def slide(self, action_id):
+    def slide(self, action_id, act=False):
         pos_r = self.empty_pos_[0]
         pos_c = self.empty_pos_[1]
         next_pos_r = pos_r
@@ -56,7 +57,8 @@ class SlidingPuzzleState:
 
         self.swap(self.empty_pos_, [next_pos_r, next_pos_c])
         new_key = self.encode()
-        self.swap(self.empty_pos_, [next_pos_r, next_pos_c])
+        if (not act):
+            self.swap(self.empty_pos_, [next_pos_r, next_pos_c])
         return new_key
     
     def swap(self, pos1, pos2):
@@ -70,8 +72,12 @@ class SlidingPuzzleState:
 
 class SlidingPuzzleEnv:
     def __init__(self, size):
-        self.state_ = SlidingPuzzleState('')
         self.board_size_ = size
+        self.target_key = f'{self.board_size_}_'
+        for i in range(1, size * size):
+            self.target_key += f'{i};'
+        self.target_key += '0'
+        self.state_ = SlidingPuzzleState(self.target_key)
 
     def state_transition(self, state_key, action_id):
         self.state_.decode(state_key)
@@ -105,3 +111,43 @@ class SlidingPuzzleEnv:
                 correct_c = (puzzle - 1) % self.board_size_
                 manhattan += abs(r - correct_r) + abs(c - correct_c)
         return manhattan
+
+    def to_string(self):
+        board_str = ''
+        for r in range(self.board_size_):
+            board_str += '+'
+            for c in range(self.board_size_):
+                board_str += '-+'
+            board_str += '\n|'
+            for c in range(self.board_size_):
+                board_str += f'{self.state_.board_[r][c]}|'
+            board_str += '\n'
+        board_str += '+'
+        for c in range(self.board_size_):
+            board_str += '-+'
+        board_str += '\n'
+        return board_str
+    
+    def to_string_with_path(self, path):
+        board_str = ''
+        for key in path:
+            self.state_.decode(key)
+            board_str += self.to_string()
+            board_str += '\n'
+        return board_str
+    
+    def shuffle(self):
+        previous_key = ''
+        current_key = self.target_key
+        num_moves = self.board_size_ * 3
+        for i in range(num_moves):
+            print(self.to_string())
+            actions = self.valid_actions(current_key)
+            next_key = previous_key
+            while next_key == previous_key:
+                choosed_idx = random.randint(0, len(actions) - 1)
+                choosed_action = actions[choosed_idx]
+                next_key = self.state_.slide(choosed_action)
+            previous_key = current_key
+            current_key = self.state_.slide(choosed_action, act=True)
+        print(self.to_string())

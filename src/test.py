@@ -140,6 +140,30 @@ class TestSlidingPuzzleEnv(unittest.TestCase):
         state = py_env.sliding_puzzle.SlidingPuzzleState(test_key)
         value = cpp_env.astar_heuristic(state)
         self.assertEqual(value, 12)
+    
+    def test_to_string(self):
+        env = py_env.sliding_puzzle.SlidingPuzzleEnv(3)
+        test_key = "3_0;4;6;7;1;3;2;5;8"
+        answer_str = "+-+-+-+\n|0|4|6|\n+-+-+-+\n|7|1|3|\n+-+-+-+\n|2|5|8|\n+-+-+-+\n"
+        env.state_.decode(test_key)
+        self.assertEqual(env.to_string(), answer_str)
+
+    def test_to_string_with_path(self):
+        env = py_env.sliding_puzzle.SlidingPuzzleEnv(3)
+        test_key = [
+            "3_1;2;3;4;5;6;0;7;8",
+            "3_0;4;6;7;1;3;2;5;8",
+            "3_0;1;3;2;5;6;7;4;8"
+        ]
+        answer_str1 = "+-+-+-+\n|1|2|3|\n+-+-+-+\n|4|5|6|\n+-+-+-+\n|0|7|8|\n+-+-+-+\n\n"
+        answer_str2 = "+-+-+-+\n|0|4|6|\n+-+-+-+\n|7|1|3|\n+-+-+-+\n|2|5|8|\n+-+-+-+\n\n"
+        answer_str3 = "+-+-+-+\n|0|1|3|\n+-+-+-+\n|2|5|6|\n+-+-+-+\n|7|4|8|\n+-+-+-+\n\n"
+        answer = answer_str1 + answer_str2 + answer_str3
+        self.assertEqual(env.to_string_with_path(test_key), answer)
+    
+    def test_shuffle(self):
+        env = py_env.sliding_puzzle.SlidingPuzzleEnv(4)
+        env.shuffle()
 
 
 if __name__ == "__main__":

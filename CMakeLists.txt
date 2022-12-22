@@ -38,3 +38,16 @@ target_link_libraries(astar_engine PUBLIC
 target_include_directories(astar_engine PUBLIC
     "${PROJECT_SOURCE_DIR}/third_party/pybind11"
 )
+
+add_executable(main src/main.cpp)
+
+target_link_libraries(main PUBLIC
+    pybind11_headers
+    ${PYTHON_LIBRARIES}
+    base
+    example
+    astar
+)
+target_include_directories(main PUBLIC
+    "${PROJECT_SOURCE_DIR}/third_party/pybind11"
+)

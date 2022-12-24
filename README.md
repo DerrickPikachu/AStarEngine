@@ -14,12 +14,18 @@ This project is developped for the final project of NSD in NYCU.
 A* Search is a path finding algorithm which is usually used in the game development and some graph problem. The difference of A* Search and Dijkstra is that A* Search introduce the heuristic function. The heuristic function, which gives an intuitive of the current state/node to the goal/target.
 
 The algorithm is as following:
+
 ![](https://i.imgur.com/0B2EKC9.png)
+
 At the start node, it can found the adjecent node, then calculate the f(node) value. The f(node) value is determined by g(node) and h(node).
 g(node) is same with the Dijkstra distance value. h(node) is the heuristic value determined by the user defined heuristic function, for example, Manhattan Distance.
+
 ![](https://i.imgur.com/7Og0iPP.png)
+
 Next, try to pop out the node with lowest f(node) value. Tag it as visited, and do the same process as the above.
+
 ![](https://i.imgur.com/YMzA8XV.png)
+
 Keep doing the process until reach the target node.
 
 In this project, the logic of A* search is already written with c++. The user can experience A* search through implementing their own environment in c++/python.
@@ -247,4 +253,77 @@ path = engine.run()
 ```
 The path returned by engine.run() is not the type of Path in C++. The Path object has been translate to be a Python list.
 
-## System Architecture
+## **System Architecture**
+This section is for someone who want to understand more detail of this project.
+
+Here are some important point of this project:
+1. AStarEngine
+2. Environment
+3. State
+
+To wrap the AStarEngine into Python, I use Pybind11. So there is a **python_wrapper.cpp** file.
+
+The first thing I want to share is the **inherit path**.
+
+### **Inherit Path**
+The inherit path is not complex but important. There is a base class of Environment and State. All the implemented environment or games must inherit those base class. (Take Maze for example)
+
+![](https://i.imgur.com/CbaT1dM.png)
+
+The Environment method "**build_state**" should return a State pointer. Therefore, Maze (user defined environment) override **build_state** method, and would initiate MazeState object in this method.
+
+![](https://i.imgur.com/D4mYVCO.png)
+
+And when we want to use AStarEngine, we must send a pointer of Environment to it.
+
+![](https://i.imgur.com/eN9isKj.png)
+
+All AStarEngine need is only the environment object. AStarEngine will not create State object by itself, it only get the state object from environment.
+
+This is the basic structure of the Maze example. If you need to implement other environment/game in C++, just follow this structure to define the environment/game.
+
+The above is only for C++. Python Environment (ex: Sliding Puzzle Game) is not that easy to provide the environment object to AStarEngine.
+
+### **Wrape Python Environment**
+To make the environment defined with Python can be accessed by AStarEngine, I use CPython API to access the environment object.
+The class PythonEnv is defined for wrapping the Python Environment object. When it is need to call the method of the Python environment, it must get the result through PythonEnv.
+
+The class PythonEnv object will hold a real environment Python object by a PyObject pointer.
+
+![](https://i.imgur.com/tbHNi4v.png)
+
+As the result, when calling those important methods of the PythonEnv, they are all just calling PyObject_CallMethod(...).
+
+![](https://i.imgur.com/ewxb0te.png)
+
+That's how PythonEnv get the result from Python environment object, and the Python object must define specific method like state_transition, astar_heuristic, and valid_actions.
+
+And the PythonState class is very similar to PythonEnv.
+
+![](https://i.imgur.com/RlV6ydF.png)
+
+![](https://i.imgur.com/rlvM37J.png)
+
+### **Set Environment to AStarEngine**
+Now that's talk about what it did when set the environment to AStarEngine.
+
+#### **For C++**
+It is very simple in C++ to set an environment object to AStarEngine. Just create a pointer of Environment and send this object through AStarEngine.set_environment.
+
+#### **For Python**
+In Python, because the Python environment cannot just send into AStarEngine, we must need the class PythonEnv to hold our Python environment object.
+
+You can see the detail of python_wrapper.cpp. When wrapping the AStarEngine.set_environment to Python, I create a PythonEnv object when there is a Python environment Object send into this method.
+
+```c++
+py::class_<AStarEngine>(m, "AStarEngine")
+    .def ("set_environment", [](AStarEngine& self, object& py_env, object& py_state_class) {
+        std::shared_ptr<PythonEnv> py_env_wrapper = std::make_shared<PythonEnv>();
+        py_env_wrapper->set_py_env(py_env.ptr());
+        py_env_wrapper->set_state_class(py_state_class.ptr());
+        self.set_environment(py_env_wrapper);
+    })
+```
+The created PythonEnv object is actually what AStarEngine can see. That is to say, AStarEngine does not need to know that the environment object is whether in C++ or Python.
+
+That's all the System Architecture of this project. Feel free to experience the AStarEngine.
